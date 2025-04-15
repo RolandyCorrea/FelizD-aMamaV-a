@@ -248,6 +248,19 @@
         notification.style.display = "none";
       }, 4000);
     }
-  </script>
+    </script>
+
+    <audio id="audioPlayer" hidden>
+      <source src="AUDIOVIAMAMA.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+      window.addEventListener('load', function() {
+        const audio = document.getElementById('audioPlayer');
+        audio.play().catch(e => {
+          console.log("El navegador bloqueó el autoplay. Se necesita interacción.");
+    });
+  });  
+</script>
 </body>
 </html>
