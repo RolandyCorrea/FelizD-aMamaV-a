@@ -216,56 +216,53 @@
     <source src="https://raw.githubusercontent.com/RolandyCorrea/FelizD-aMamaV-a/main/AUDIOVIAMAMA.mp3" type="audio/mpeg">
   </audio>
 
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwl4om4TN5VmHrPjx5nq1FJ_aJEtSBb73xYPw-g38y5SZO2PaKljB3T9ywL3cAxIBfWcg/exec";
-    const form = document.getElementById('sorteo-form');
-    const notification = document.getElementById('notification');
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwl4om4TN5VmHrPjx5nq1FJ_aJEtSBb73xYPw-g38y5SZO2PaKljB3T9ywL3cAxIBfWcg/exec";
+  const form = document.getElementById('sorteo-form');
+  const notification = document.getElementById('notification');
 
-    // Reproducir audio al hacer clic en cualquier input del formulario
-    const formInputs = form.querySelectorAll('input');
-    let audioReproducido = false;
+  form.addEventListener('submit', e => {
+    e.preventDefault();
 
-    formInputs.forEach(input => {
-      input.addEventListener('click', () => {
-        if (!audioReproducido) {
-          const audio = document.getElementById('audioBienvenida');
-          if (audio) {
-            audio.play().catch(err => {
-              console.log("Audio bloqueado por el navegador:", err);
-            });
-            audioReproducido = true;
-          }
-        }
+    const formData = new FormData(form);
+    const fetchPromise = fetch(scriptURL, { method: 'POST', body: formData });
+    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve("timeout"), 1000));
+    
+    Promise.race([fetchPromise, timeoutPromise])
+      .then(result => {
+        form.reset();
+        showNotification("✅ Te registraste exitosamente. ¡Gracias por elegirnos!");
+      })
+      .catch(error => {
+        showNotification("❌ Hubo un error al registrar tus datos. Inténtalo de nuevo.");
+        console.error("Error:", error);
       });
-    });
+  });
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
+  function showNotification(message) {
+    notification.textContent = message;
+    notification.style.display = "block";
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 4000);
+  }
 
-      const formData = new FormData(form);
-      const fetchPromise = fetch(scriptURL, { method: 'POST', body: formData });
-      const timeoutPromise = new Promise(resolve => setTimeout(() => resolve("timeout"), 1000));
+  // Cargar y reproducir el audio solo al hacer clic en algún campo del formulario
+  let audioLoaded = false;
+  const formInputs = document.querySelectorAll('#sorteo-form input');
 
-      Promise.race([fetchPromise, timeoutPromise])
-        .then(result => {
-          form.reset();
-          showNotification("✅ Te registraste exitosamente. ¡Gracias por elegirnos!");
-        })
-        .catch(error => {
-          showNotification("❌ Hubo un error al registrar tus datos. Inténtalo de nuevo.");
-          console.error("Error:", error);
+  formInputs.forEach(input => {
+    input.addEventListener('click', () => {
+      if (!audioLoaded) {
+        const audio = new Audio("https://rolandycorrea.github.io/FelizD-aMamaV-a/AUDIOVIAMAMA.mp3");
+        audio.play().catch(err => {
+          console.log("El navegador bloqueó el audio:", err);
         });
+        audioLoaded = true;
+      }
     });
-
-    function showNotification(message) {
-      notification.textContent = message;
-      notification.style.display = "block";
-
-      setTimeout(() => {
-        notification.style.display = "none";
-      }, 4000);
-    }
-  </script>
+  });
+</script>
 </body>
 </html>
 
