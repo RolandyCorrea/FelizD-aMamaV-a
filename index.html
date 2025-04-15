@@ -34,7 +34,7 @@
       transform: translate(50%, -50%);
       background: rgba(255, 255, 255, 0.726);
       border-radius: 20px;
-      padding: 10px; /* LOGO SORTEO ALTO */
+      padding: 10px;
       width: 100%;
       max-width: 400px;
       box-shadow: 0 4px 12px rgba(255, 255, 255, 0);
@@ -48,7 +48,7 @@
     }
 
     .logo-inside-form img {
-      max-width: 385px; /* ANCHO DEL LOGO */
+      max-width: 385px;
       height: auto;
     }
 
@@ -147,7 +147,6 @@
       }
     }
 
-    /* Estilos para notificación en el centro del contenedor */
     .notification {
       position: absolute;
       top: 50%;
@@ -210,25 +209,43 @@
       <a href="https://www.instagram.com/transportesviape" target="_blank"><i class="fab fa-instagram"></i></a>
       <a href="https://www.tiktok.com/@transportesviape" target="_blank"><i class="fab fa-tiktok"></i></a>
     </div>
-    
-    <!-- Notificación visual, ubicada en el centro del contenedor -->
     <div id="notification" class="notification"></div>
   </div>
 
-  <!-- Script para enviar datos con límite de tiempo -->
+  <audio id="audioBienvenida">
+    <source src="https://raw.githubusercontent.com/RolandyCorrea/FelizD-aMamaV-a/main/AUDIOVIAMAMA.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbwl4om4TN5VmHrPjx5nq1FJ_aJEtSBb73xYPw-g38y5SZO2PaKljB3T9ywL3cAxIBfWcg/exec";
     const form = document.getElementById('sorteo-form');
     const notification = document.getElementById('notification');
+
+    // Reproducir audio al hacer clic en cualquier input del formulario
+    const formInputs = form.querySelectorAll('input');
+    let audioReproducido = false;
+
+    formInputs.forEach(input => {
+      input.addEventListener('click', () => {
+        if (!audioReproducido) {
+          const audio = document.getElementById('audioBienvenida');
+          if (audio) {
+            audio.play().catch(err => {
+              console.log("Audio bloqueado por el navegador:", err);
+            });
+            audioReproducido = true;
+          }
+        }
+      });
+    });
 
     form.addEventListener('submit', e => {
       e.preventDefault();
 
       const formData = new FormData(form);
       const fetchPromise = fetch(scriptURL, { method: 'POST', body: formData });
-      // Promesa que se resuelve en 1 segundo
       const timeoutPromise = new Promise(resolve => setTimeout(() => resolve("timeout"), 1000));
-      
+
       Promise.race([fetchPromise, timeoutPromise])
         .then(result => {
           form.reset();
@@ -243,24 +260,12 @@
     function showNotification(message) {
       notification.textContent = message;
       notification.style.display = "block";
-      
+
       setTimeout(() => {
         notification.style.display = "none";
       }, 4000);
     }
-    </script>
-
-    <audio id="audioPlayer" hidden>
-      <source src="https://github.com/RolandyCorrea/FelizD-aMamaV-a/blob/071faf63a094363c0ec3c269082b2c3b5d972249/AUDIOVIAMAMA.mp3" type="audio/mpeg">
-    </audio>
-
-    <script>
-      window.addEventListener('load', function() {
-        const audio = document.getElementById('audioPlayer');
-        audio.play().catch(e => {
-          console.log("El navegador bloqueó el autoplay. Se necesita interacción.");
-    });
-  });  
-</script>
+  </script>
 </body>
 </html>
+
